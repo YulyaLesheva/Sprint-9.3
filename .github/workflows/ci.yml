@@ -1,0 +1,93 @@
+name: Test Pipeline with Selenoid
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:  # Добавляю возможность ручного запуска
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Install Java (required for Allure)
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget jq curl
+        wget -O allure.tgz https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
+        tar -xzf allure.tgz
+        sudo mv allure-2.27.0 /opt/allure
+        sudo ln -s /opt/allure/bin/allure /usr/local/bin/allure
+        
+    - name: Pull required Docker images
+      run: |
+        docker pull aerokube/selenoid:latest
+        docker pull selenoid/chrome:128.0
+        docker pull aerokube/selenoid-ui:latest
+    
+    - name: Start Selenoid
+      run: |
+        docker compose up -d selenoid selenoid-ui
+        sleep 20  # Wait for Selenoid to start
+        
+    - name: Check Selenoid status
+      run: |
+        echo "Checking Selenoid health..."
+        for i in {1..30}; do
+          if curl -f http://localhost:4444/status; then
+            echo "Selenoid is ready!"
+            echo "Selenoid status:"
+            curl -s http://localhost:4444/status | jq .
+            break
+          fi
+          echo "Waiting for Selenoid... attempt $i"
+          sleep 2
+        done
+        
+        echo "Final check - Selenoid containers:"
+        docker ps | grep selenoid
+        
+    - name: Show Docker info
+      run: |
+        docker ps -a
+        docker logs selenoid
+        
+    - name: Run tests
+      run: |
+        docker compose run --rm tests
+        
+    - name: Generate Allure Report
+      if: always()
+      run: |
+        allure generate allure-results -o allure-report --clean
+        
+    - name: Upload Allure Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-results
+        path: allure-results/
+        
+    - name: Upload Allure Report
+      if: always() 
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-report
+        path: allure-report/
+        
+    - name: Stop containers
+      if: always()
+      run: docker compose down 
