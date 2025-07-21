@@ -1,0 +1,48 @@
+services:
+  selenoid:
+    image: "aerokube/selenoid:latest"
+    container_name: selenoid
+    platform: linux/amd64
+    ports:
+      - "4444:4444"
+    networks:
+      - selenoid
+    volumes:
+      - "./config.json:/etc/selenoid/browsers.json"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: ["-conf", "/etc/selenoid/browsers.json", "-container-network", "selenoid", "-limit", "2"]
+    privileged: true
+    environment:
+      - OVERRIDE_VIDEO_OUTPUT_DIR=/opt/selenoid/video
+
+  selenoid-ui:
+    image: "aerokube/selenoid-ui:latest"
+    container_name: selenoid-ui
+    platform: linux/amd64
+    links:
+      - selenoid
+    ports:
+      - "8081:8080"
+    networks:
+      - selenoid
+    command: ["--selenoid-uri", "http://selenoid:4444"]
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tests
+    volumes:
+      - ".:/app"
+    depends_on:
+      selenoid:
+        condition: service_started
+    networks:
+      - selenoid
+    environment:
+      - DOCKER_RUN=true
+    command: ["pytest", "--alluredir", "allure-results", "-v"]
+
+networks:
+  selenoid:
+    name: selenoid 

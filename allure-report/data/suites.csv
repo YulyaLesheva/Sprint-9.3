@@ -1,0 +1,7 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Mon Jul 21 20:41:24 UTC 2025","Mon Jul 21 20:41:29 UTC 2025","4472","tests","test_recipe","TestRecipeCreation","","","Отображение карточки созданного рецепта",""
+"passed","Mon Jul 21 20:41:20 UTC 2025","Mon Jul 21 20:41:22 UTC 2025","1918","tests","test_account_creation","TestAccountCreation","","","Отображение формы авторизации после создания аккаунта",""
+"passed","Mon Jul 21 20:41:18 UTC 2025","Mon Jul 21 20:41:20 UTC 2025","1913","tests","test_account_creation","TestAccountCreation","","","Переход на страницу авторизации после создания аккаунта",""
+"passed","Mon Jul 21 20:41:12 UTC 2025","Mon Jul 21 20:41:14 UTC 2025","2393","tests","test_account_authorization","TestAuthorization","","","Переход на главную страницу при авторизации",""
+"passed","Mon Jul 21 20:41:31 UTC 2025","Mon Jul 21 20:41:36 UTC 2025","4901","tests","test_recipe","TestRecipeCreation","","","Название рецепта отображается в карточке",""
+"passed","Mon Jul 21 20:41:15 UTC 2025","Mon Jul 21 20:41:17 UTC 2025","1719","tests","test_account_authorization","TestAuthorization","","","Отображение кнопки ""Выход"" после авторизации",""

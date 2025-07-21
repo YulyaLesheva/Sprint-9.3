@@ -1,0 +1,7 @@
+BASE_URL_FRONT = 'https://foodgram-frontend-1.prakticum-team.ru'
+BASE_URL_BACK = 'https://foodgram-backend-1.prakticum-team.ru'
+SIGNIN_PAGE = '/signin'
+SIGNUP_PAGE = '/signup'
+RECIPES_PAGE = '/recipes'
+CREATE_RECIPE_PAGE = '/recipes/create'
+RECIPE_DETAILS_PAGE = '/recipes/' 
